@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drag-and-drop Upload Demo</title>
+
+    <!-- (A) CSS + JS -->
+    <link rel="stylesheet" href="dd-upload.css"/>
+    <script src="dd-upload.js"></script>
+  </head>
+  <body>
+    <!-- (B) FILE DROP ZONE -->
+    <div id="demo"></div>
+
+    <!-- (C) ATTACH -->
+    <script>
+    ddup.init({
+      target : document.getElementById("demo"), // target html <div>
+      action : "dd-upload.php", // server-side upload handler
+      data : { key : "value" } // optional, extra post data
+    });
+    </script>
+  </body>
+</html>
