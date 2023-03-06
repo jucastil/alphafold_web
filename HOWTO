@@ -1,0 +1,18 @@
+HOWTO alphafold web submission
+=============================
+1) upload the fasta (index.html) 
+2) submit a job run_name.sh (submit.html)
+  - make a database entry
+  - write the script run_name.sh
+  - send an email
+3) run scripts/alphaqueue4.sh (each 2 minutes)
+ - copy run_name.sh as launched_name.sh
+ - run launched_name.sh
+4) run monitor/alphatar2.sh (each 10 minutes)
+ - tar the new results
+ - rsync the results to the web server
+5) run monitor/alphamon4.sh (each 5 minutes) 
+ - create the monitor web (status.html)
+6) run results/alphares.sh (each 5 minutes)
+ - create the results web (results.html)
+
