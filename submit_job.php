@@ -46,6 +46,12 @@
 		// records the submission sh file
 		$sites = realpath(dirname(__FILE__)).'/';
 		$newfile = $sites."scripts/run_".$job_name.".sh";
+		//random GPU
+		$myArray = array(0, 1, 2, 3);
+		// Random shuffle
+		shuffle($myArray);
+		// First element is random now
+		$gpudev = $myArray[0];
 		//echo $newfile;
 		$records = fopen($newfile,"w") or die("Cannot write the script!");
 		//fixed run paramenters
@@ -53,7 +59,8 @@
 		$data_dir = "--data_dir=/home/alphafold/genetic_database_new/";
 		$output_dir = "--output_dir=/home/alphafold/results/";
 		$shenanigan = "#!/bin/bash \n \n module load python-3.7.3 \n";
-		$shenanigan .= "sudo python3 /home/alphafold/alphafold/docker/run_docker.py ".$fasta_path.$filename." --max_template_date=".$tmp_date." --model_preset=". $run_type." ".$data_dir." ".$output_dir;
+		$shenanigan .= "### user: ".$email_form ."\n";
+		$shenanigan .= "sudo python3 /home/alphafold/alphafold/docker/run_docker.py ".$fasta_path.$filename." --max_template_date=".$tmp_date." --gpu_devices=".$gpudev." --model_preset=". $run_type." ".$data_dir." ".$output_dir;
 		fwrite($records, $shenanigan);
 		fclose($records);
 	}
@@ -91,8 +98,8 @@
     $email_message .= " run type: " . $run_type . "\n";
     $email_message .= " Results delivery: " . $data_path . "\n";
     $email_message .= " \n";
-    $email_message .= " You should receive a second email once your job is running. \n";
-    $email_message .= " If you don't get a second email, forward this email to: \n";
+    $email_message .= " Please check the status of your job in the STATUS page. \n";
+    $email_message .= " If you have issues forward this email to: \n";
     $email_message .= " Juan.Castillo@biophys.mpg.de \n";
     create_script($job_name,$filename,$tmp_date,$run_type);
     $headers = "From: alphafold@biophys.mpg.de" . "\r\n" ;

@@ -8,7 +8,7 @@ var ddup = {
 
     // (A2) DRAG-DROP HTML INTERFACE
     instance.target.innerHTML =
-      `<div class="updrop">Drop FASTA Here To Upload <br><br> OR<br> <br>use Choose file/Upload</div>
+      `<div class="updrop">FASTA upload area<br><br> OR<br> <br>Use Choose file/Upload</div>
        <div class="upstat"></div>`;
     instance.hzone = instance.target.querySelector(".updrop");
     instance.hstat = instance.target.querySelector(".upstat");

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;multimer-00.fasta multi job_03
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+
+input[type=submit] {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+
+<h3> &nbsp; &nbsp; Batch submission</h3>
+
+<div class="container">
+  <form name "new job" action="batch_record.php" method="post">
+    <label for="fname">First Name</label>
+    <input type="text" id="fname" name="fname" placeholder="Your name..">
+
+    <label for="lname">Last Name</label>
+    <input type="text" id="lname" name="lname" placeholder="Your last name..">
+    
+    <label for="batch">Batch job file name</label><br><br>
+    Please <b>don't use spaces</b> neither strange characters. <br>
+    Logs will be created after this filename <br>
+    <input type="text" id="batch" name="batch" placeholder="example: Silicotest">
+    
+    
+    <label for="freeform"><b>Batch job configuration</b> <br><br>
+    Please input fasta [space] mono/multi [space] jobname<br> 
+    <b>NOTE:</b> this field is processed</label><br>
+	<br>
+	<textarea id="freeform" name="freeform" rows="5" cols="50">
+monomer-00.fasta mono job_00
+monomer-01.fasta mono job_01
+multimer-00.fasta multi job_03
+multimer-01.fasta multi job_04
+	</textarea>
+     
+    <strong>NOTIFY ME </strong> <br><br>
+    <input type="radio" name="runtype" id="allnews" value="allnews"  style="height:35px; width:35px; vertical-align: middle;">
+    <label for="allnews">After each event</label> <br>
+    <input type="radio" name="runtype"  id="endonly" value="endonly" style="height:35px; width:35px; vertical-align: middle;">
+    <label for="endonly">Only at the end</label><br><br>
+    <label for="email">Email to (notifications will arrive here) </label>
+    <input type="text" id="email" name="email" placeholder="Your email..">
+    <br>
+    
+	
+	Clicking on <b>Submit</b> will only <b>save</b> the batch job configuration file in the server. <br><br>
+	Your jobs will appear in the <b>Status</b> page after scheduled.<br><br>
+    <input type="submit" value="Submit">
+    <input type="reset"  style="background-color:yellow; color: black;  padding: 12px 20px;  border: none; border-radius: 4px;  cursor: pointer;" value="Reset">
+    <button type="button" style="background-color:lime;  color: black;  padding: 12px 20px;  border: none; border-radius: 4px;  cursor: pointer; "onClick="window.location ='index.html' ">Back to main</button>
+
+    
+  </form>
+
+
+
+</div>
+</body>
+</html>
