@@ -109,17 +109,16 @@ function is_running_docker_in_database(){
 		if [[ "$IS_IN_DB" == *"$dname"* ]]; then
 			echo "	docker: " $dname " already in database"
 		else
-			#echo " 	DBUG:: docker not in DB, checking if it's an alphafold docker";
+			echo " docker not in DB, checking if it's an alphafold docker";
 			dimage=`docker ps --no-trunc --format "{{ .Image }}"  --filter "name=$dname"`; 
 			echo "	image:" $dimage;
 			if [ "$dimage" = "alphafold" ]; then
-				echo "	DBUG:: docker alphafold found, adding it to database"
+				echo "	alphafold docker, adding it to database"
 				add_running_docker_to_database $dname
-				## send an email to the docker owner
 				useremail=$(mysql --silent --batch -N -u $USERNAME -p$PASSWORD -D $DATABASE -e "SELECT email FROM tbl_alphafold WHERE dockername= \"$dname\" ");
 				#send_email_docker_running $useremail $dname; ## error! check function ...
 			else
-				echo "	DBUG:: docker not an alphafold image";
+				echo "	not an alphafold image";
 			fi
 		fi
 	done
@@ -129,7 +128,7 @@ function is_running_docker_in_database(){
 function add_running_docker_to_database(){
 
 	fasta=`docker ps --no-trunc --format "{{ .Command }}"  --filter "name=$dname"  | awk '{ print $2}' | sed 's|--fasta_paths=/mnt/fasta_path_0/||g'`;
-	echo "	DBUG:: adding " $dname " to database fasta: " $fasta	
+	echo "	DEBUG: adding " $dname " to database fasta: " $fasta	
 	IS_IN_DB=`mysqldump -p$PASSWORD $DATABASE --extended=FALSE | grep -i "$fasta"`;
 	#echo $IS_IN_DB;
 	if [[ "$IS_IN_DB" == *"$fasta"* ]]; then
@@ -153,10 +152,10 @@ function is_docker_still_running(){
 			#mysql -u $USERNAME -p$PASSWORD -D $DATABASE -e "SELECT dockername FROM tbl_alphafold WHERE status = \"RUNNING\" ";
 			mysql --silent --batch -N -u $USERNAME -p$PASSWORD -D $DATABASE -e "SELECT dockername FROM tbl_alphafold WHERE status = \"RUNNING\" " | while IFS= read -r databasedocker
 			do
-				#echo " 	DBUG::FOUND " $databasedocker " database status RUNNING"
+				echo " 	FOUND " $databasedocker " database status RUNNING"
 				if [[ " ${DPSA_N[*]} " =~ " ${databasedocker} " ]]; then
 					# whatever you want to do when array contains value
-					echo "	DBUG::FOUND docker status still running";
+					echo "	docker still running";
 				else
 					echo "	database docker not anymore running, updating database";
 					mysql -u $USERNAME -p$PASSWORD -D $DATABASE -e "UPDATE tbl_alphafold SET status = 'DONE'  WHERE dockername = \"${databasedocker}\""    
