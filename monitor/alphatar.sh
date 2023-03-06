@@ -12,7 +12,8 @@ echo `$DATE` "	: ### alphatarresults #### starting  "
 ### tar partial results, copy them to the web area, make them downloadable
 find /home/alphafold/results/ -maxdepth 1 -type d -exec tar cfP  {}.tar {}  \;  > /dev/null 2>&1
 echo `$DATE` "	: find phase done " 
-cp -R /home/alphafold/results/*.tar /var/www/html/alphafold/monitor/results/
+rsync -av  /home/alphafold/results/*.tar /var/www/html/alphafold/monitor/results/
+#cp -R /home/alphafold/results/*.tar /var/www/html/alphafold/monitor/results/
 echo `$DATE` "	: copying phase done " 
 chmod 777 /var/www/html/alphafold/monitor/results/*.tar
 echo `$DATE` "	: onwership phase done " 

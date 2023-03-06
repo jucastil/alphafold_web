@@ -6,37 +6,18 @@
 #	Last update: 11.07.2022
 ##################################################
 
-### initialization
-dstatus="OK"
-dfasta="one.fasta"
-dcpu="1%"
-dmem="10"
-dlink="0"
-dsize="0"
-
-function write_dlink_dsize(){
-	
-	if [[ "$dfasta" == *"fasta"* ]]; then
-		#echo "	DBUG::FASTA : "$dfasta;
-		foldername=`echo $dfasta | sed 's/.fasta//g'`;
-		#echo "	DBUG::FOLDER:	"$foldername;
-		dlink=`ls -lh /var/www/html/alphafold/monitor/results/*tar | grep $foldername | tail -1 | sed 's|/var/www/html/alphafold/monitor/||g' | awk '{print "<a href="$9">Download</a>" }'`;
-		#echo "	DBUG::DOWNLOAD: "$dlink;
-		dsize=`ls -lh /var/www/html/alphafold/monitor/results/*tar | grep $foldername | tail -1 | awk '{print $5 }'`;
-		#echo "	DBUG::SIZE: "$dsize;
-	fi
-	
-	}
-
-
 DATE=`date +%Y-%m-%d-%Hh-%Mm`
 ### output folder: everything happens here
 MONPATH='/var/www/html/alphafold/monitor'
+
 cat $MONPATH/header.part > $MONPATH/raw.html
-echo "<th>NAME</th> <th>IMAGE</th> <th>CREATED</th> <th>STATUS</th> <th>FASTA</th>  <th>CPU%</th> <th>MEM USAGE / LIMIT </th> <th>Partial results</th> <th>Size</th> " >> $MONPATH/table.part
 
 ### table building
+
+#export FORMAT="table {{.Names}}\t{{.Image}}\t{{.Command}}\t{{.CreatedAt}}\t{{.Status}}"
+
 DRUNNING=`docker ps -q | wc -l`  # number of running dockers
+
 ## info arrays : some are not properly stored :-)
 DPSA_N=(`docker ps -a --format="{{.Names}}"`)
 DPSA_I=(`docker ps -a --format="{{.Image}}"`)
@@ -47,32 +28,35 @@ DPSA_C=(`docker ps -a --format="{{.CreatedAt}}"`)
 NROWS=${#DPSA_N[@]}
 #echo "	found : " $NROWS " dockers"
 
+echo "<th>NAME</th> <th>IMAGE</th> <th>CREATED</th> <th>STATUS</th> <th>FASTA</th>  <th>CPU%</th> <th>MEM USAGE / LIMIT </th> <th>Partial results</th> <th>Size</th> " >> $MONPATH/table.part
+
 for (( i=0; i<$NROWS; i++ ));
 do
 	dstatus=`docker ps -a --format="{{.Status}}" --filter "name=${DPSA_N[$i]}"`;
 	dfasta=`docker ps --no-trunc --format "{{ .Command }}"  --filter "name=${DPSA_N[$i]}"  | awk '{ print $2}' | sed 's|--fasta_paths=/mnt/fasta_path_0/||g'`;
 	dcpu=`docker stats --no-stream --format "{{.CPUPerc}}" ${DPSA_N[$i]}`;
 	dmem=`docker stats --no-stream --format "{{.MemUsage}}" ${DPSA_N[$i]}`;
-	#echo "	position: " $i
-	write_dlink_dsize	
-	echo "<tr><td>${DPSA_N[$i]}" "</td>" \
-	     "<td>" "${DPSA_I[$i]}" "</td> " \
-	     "<td>""${DPSA_C[$i]}" "</td> " \
-	     "<td>" $dstatus "</td> " \
-	     "<td>" $dfasta "</td> " \
-	     "<td>" $dcpu "</td> " \
-	     "<td>" $dmem "</td>" \
-	     "<td>" $dlink "</td> " \
-	     "<td>" $dsize "</td> " \
-	     "</tr>"   >> $MONPATH/table.part
+	dlink="0";
+	dsize="0";
+	if [[ "$dfasta" == *"fasta"* ]]; then
+		#echo $dfasta;
+		foldername=`echo $dfasta | sed 's/.fasta//g'`;
+		#echo $foldername;
+		dlink=`ls -lh /var/www/html/alphafold/monitor/results/*tar | grep $foldername | sed 's|/var/www/html/alphafold/monitor/||g' | awk '{print "<a href="$9">Download</a>" }'`;
+		#echo $dlink;
+		dsize=`ls -lh /var/www/html/alphafold/monitor/results/*tar | grep $foldername | awk '{print $5 }'`;
+		#echo $dsize;
+	fi
+	echo "<tr><td>${DPSA_N[$i]}" "</td><td>" "${DPSA_I[$i]}" "</td><td>""${DPSA_C[$i]}" "</td><td>" \
+     $dstatus "</td><td>" $dfasta "</td><td>" $dcpu "</td><td>" $dmem "</td><td>" $dlink "</td><td>" $dsize "</td></tr>" >> $MONPATH/table.part
 done
-
 
 cat $MONPATH/table.part >> $MONPATH/raw.html
 ### close the table, add the go to results/back to main buttons
 echo "</table> <br><hr><br>" >>  $MONPATH/raw.html
 echo "<button type=\"button\" style=\"background-color:Coral; color: black;  padding: 12px 20px;  border: none; border-radius: 4px;  cursor: pointer; \"onClick=\"window.location ='../results/results.html' \">Go to all results (for finished runs)</button>" >> $MONPATH/raw.html
 echo "<button type=\"button\" style=\"background-color:Aqua; color: black;  padding: 12px 20px;  border: none; border-radius: 4px;  cursor: pointer; \"onClick=\"window.location ='submit.html' \">Mark as done</button>" >> $MONPATH/raw.html
+
 echo "<button type=\"button\" style=\"background-color:lime;  color: black;  padding: 12px 20px;  border: none; border-radius: 4px;  cursor: pointer; \"onClick=\"window.location ='../index.html' \">Back to main</button>" >> $MONPATH/raw.html
 
 
@@ -89,3 +73,4 @@ sed -i '/trilium/d' $MONPATH/raw.html
 cp $MONPATH/raw.html $MONPATH/status.html
 rm -rf $MONPATH/table.part
 rm -rf $MONPATH/raw.html
+
